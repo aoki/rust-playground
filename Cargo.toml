@@ -9,9 +9,16 @@ edition = "2021"
 
 
 [[bin]]
-name = "main"
-path = "src/main.rs"
+name = "create_symlink"
+path = "src/create_symlink.rs"
+
 
 [[bin]]
 name = "ignore_filter"
 path = "src/ignore_filter.rs"
+
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
