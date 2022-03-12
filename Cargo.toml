@@ -9,6 +9,11 @@ edition = "2021"
 
 
 [[bin]]
+name = "filter"
+path = "src/filter.rs"
+
+
+[[bin]]
 name = "create_symlink"
 path = "src/create_symlink.rs"
 
