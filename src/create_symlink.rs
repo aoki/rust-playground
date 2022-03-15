@@ -8,8 +8,10 @@ fn main() -> std::io::Result<()> {
 
     let read = fs::read_link(link)?;
     println!("Read link: {:?}", read);
-
     remove_file(&link)?;
+
+    let r = fs::read_link(link).and_then(|path| remove_file(&path));
+    println!("Remove link: {:?}", r);
 
     Ok(())
 }
