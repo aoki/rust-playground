@@ -19,5 +19,5 @@ fn main() {
 
     let x = "hello";
     println!("{:?}", char::from(x.as_bytes()[0]));
-    // input.chars().nth(i)
+    println!("{:?}", string.chars().nth(0));
 }
