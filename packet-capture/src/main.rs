@@ -2,6 +2,8 @@ use log::{error, info};
 use pnet::datalink;
 use pnet::datalink::Channel::Ethernet;
 use pnet::packet::ethernet::{EtherTypes, EthernetPacket};
+use pnet::packet::ip::IpNextHeaderProtocol;
+use pnet::packet::ipv4::Ipv4Packet;
 use std::env;
 
 fn main() {
@@ -47,10 +49,30 @@ fn main() {
     }
 }
 
-fn ipv6_handler(frame: &EthernetPacket) -> _ {
+fn ipv6_handler(ethernet: &EthernetPacket) -> _ {
     todo!()
 }
 
-fn ipv4_hadler(frame: &EthernetPacket) -> _ {
+fn ipv4_hadler(ethernet: &EthernetPacket) {
+    if let Some(packet) = Ipv4Packet::new(ethernet.payload()) {
+        match packet.get_next_level_protocol() {
+            IpNextHeaderProtocol::Tcp => {
+                tcp_handler(&packet);
+            }
+            IpNextHeaderProtocol::Udp => {
+                udp_handler(&packet);
+            }
+            _ => {
+                info!("Not a TCP or UDP packet");
+            }
+        }
+    }
+}
+
+fn udp_handler(packet: &Ipv4Packet) -> _ {
+    todo!()
+}
+
+fn tcp_handler(packet: &Ipv4Packet) -> _ {
     todo!()
 }
