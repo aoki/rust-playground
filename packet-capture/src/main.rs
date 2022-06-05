@@ -82,10 +82,16 @@ fn ipv4_hadler(ethernet: &EthernetPacket) {
     }
 }
 
-fn udp_handler(packet: &Ipv4Packet) -> _ {
-    todo!()
+fn udp_handler(packet: &GettableEndPoints) -> _ {
+    let udp = UdpPacket::new(packet.get_payload());
+    if let Some(udp) = udp {
+        print_packet_info(packet, &udp, "UDP");
+    }
 }
 
-fn tcp_handler(packet: &Ipv4Packet) -> _ {
-    todo!()
+fn tcp_handler(packet: &GettableEndPoints) {
+    let tcp = TcpPacket::new(packet.get_payload());
+    if let Some(tcp) = tcp {
+        print_packet_info(packet, &tcp, "TCP");
+    }
 }
