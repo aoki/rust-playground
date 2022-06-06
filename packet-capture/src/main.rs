@@ -5,7 +5,11 @@ use pnet::packet::ethernet::{EtherTypes, EthernetPacket};
 use pnet::packet::ip::{IpNextHeaderProtocol, IpNextHeaderProtocols};
 use pnet::packet::ipv4::Ipv4Packet;
 use pnet::packet::ipv6::Ipv6Packet;
+use pnet::packet::tcp::TcpPacket;
+use pnet::packet::udp::UdpPacket;
 use std::env;
+
+const WIDTH: usize = 20;
 
 fn main() {
     env::set_var("RUST_LOG", "debug");
@@ -94,4 +98,37 @@ fn tcp_handler(packet: &GettableEndPoints) {
     if let Some(tcp) = tcp {
         print_packet_info(packet, &tcp, "TCP");
     }
+}
+
+fn print_packet_info(l3: &GettableEndPoints, l4: &GettableEndPoints, proto: &str) {
+    println!(
+        "Captured a {} packet from {}|{} to {}|{}\n",
+        proto,
+        l3.get_source(),
+        l4.get_source(),
+        l3.get_destination(),
+        l4.get_destination()
+    );
+    let payload = l4.get_payload();
+    let len = payload.len();
+
+    for i in 0..len {
+        print!("{:<02X} ", payload[i]);
+        if i % WIDTH == WIDTH - 1 || i == len - 1 {
+            for _j in 0..WIDTH - 1 - (i % WIDTH) {
+                print!("    ");
+            }
+            print!("| ");
+            for j in i - i % WIDTH..=i {
+                if payload[j].is_ascii_alphabetic() {
+                    print!("{}", payload[j] as char);
+                } else {
+                    print!(".");
+                }
+            }
+            println!();
+        }
+    }
+    println!("{}", "=".repeat(WIDTH * 3));
+    println!();
 }
