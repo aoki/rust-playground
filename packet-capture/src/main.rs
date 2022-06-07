@@ -5,6 +5,7 @@ use pnet::packet::ethernet::{EtherTypes, EthernetPacket};
 use pnet::packet::ip::{IpNextHeaderProtocol, IpNextHeaderProtocols};
 use pnet::packet::ipv4::Ipv4Packet;
 use pnet::packet::ipv6::Ipv6Packet;
+use pnet::packet::Packet;
 use std::env;
 
 fn main() {
@@ -93,5 +94,39 @@ fn tcp_handler(packet: &GettableEndPoints) {
     let tcp = TcpPacket::new(packet.get_payload());
     if let Some(tcp) = tcp {
         print_packet_info(packet, &tcp, "TCP");
+    }
+}
+
+pub trait GettableEndPoints {
+    fn get_source(&self) -> String;
+    fn get_destination(&self) -> String;
+    fn get_payload(&self) -> &[u8];
+}
+
+impl<'a> GettableEndPoints for Ipv4Packet<'a> {
+    fn get_source(&self) -> String {
+        self.get_source().to_stirng()
+    }
+
+    fn get_destination(&self) -> String {
+        self.get_destination().to_string()
+    }
+
+    fn get_payload(&self) -> &[u8] {
+        self.payload()
+    }
+}
+
+impl<'a> GettableEndPoints for Ipv6Packet<'a> {
+    fn get_source(&self) -> String {
+        self.get_source()
+    }
+
+    fn get_destination(&self) -> String {
+        self.get_destination()
+    }
+
+    fn get_payload(&self) -> &[u8] {
+        self.payload()
     }
 }
