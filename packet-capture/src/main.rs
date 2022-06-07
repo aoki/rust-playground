@@ -5,8 +5,12 @@ use pnet::packet::ethernet::{EtherTypes, EthernetPacket};
 use pnet::packet::ip::{IpNextHeaderProtocol, IpNextHeaderProtocols};
 use pnet::packet::ipv4::Ipv4Packet;
 use pnet::packet::ipv6::Ipv6Packet;
+
 use pnet::packet::tcp::TcpPacket;
 use pnet::packet::udp::UdpPacket;
+
+use pnet::packet::Packet;
+
 use std::env;
 
 const WIDTH: usize = 20;
@@ -131,4 +135,38 @@ fn print_packet_info(l3: &GettableEndPoints, l4: &GettableEndPoints, proto: &str
     }
     println!("{}", "=".repeat(WIDTH * 3));
     println!();
+}
+
+pub trait GettableEndPoints {
+    fn get_source(&self) -> String;
+    fn get_destination(&self) -> String;
+    fn get_payload(&self) -> &[u8];
+}
+
+impl<'a> GettableEndPoints for Ipv4Packet<'a> {
+    fn get_source(&self) -> String {
+        self.get_source().to_stirng()
+    }
+
+    fn get_destination(&self) -> String {
+        self.get_destination().to_string()
+    }
+
+    fn get_payload(&self) -> &[u8] {
+        self.payload()
+    }
+}
+
+impl<'a> GettableEndPoints for Ipv6Packet<'a> {
+    fn get_source(&self) -> String {
+        self.get_source()
+    }
+
+    fn get_destination(&self) -> String {
+        self.get_destination()
+    }
+
+    fn get_payload(&self) -> &[u8] {
+        self.payload()
+    }
 }
