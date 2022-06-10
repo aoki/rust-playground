@@ -1,5 +1,6 @@
-use pnet::packet::{ip::IpNextHeaderProtocols::Tcp, tcp::TcpFlags};
-use std::net::Ipv4Addr;
+use log::error;
+use pnet::packet::tcp::TcpFlags;
+use std::{env, net::Ipv4Addr, process};
 
 enum ScagnType {
     Syn = TcpFlags::SYN as isize,
@@ -17,5 +18,12 @@ struct PacketInfo {
 }
 
 fn main() {
+    env::set_var("RUST_LOG", "debug");
+    env_logger::init();
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 3 {
+        error!("Bad number of arguments. [ipaddr] [scantype]");
+        process::exit(1);
+    }
     println!("Hello, world!");
 }
