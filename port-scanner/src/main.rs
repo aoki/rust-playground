@@ -1,6 +1,9 @@
-~use log::error;
-use pnet::packet::tcp::TcpFlags;
-use std::{collections::HashMap, env, fs, net::Ipv4Addr, process, iter::Scan};
+use log::error;
+use pnet::{
+    packet::{ip::IpNextHeaderProtocols, tcp::TcpFlags},
+    transport::{self, TransportChannelType, TransportProtocol},
+};
+use std::{collections::HashMap, env, fs, net::Ipv4Addr, process};
 
 enum ScagnType {
     Syn = TcpFlags::SYN as isize,
@@ -41,13 +44,15 @@ fn main() {
             my_ipaddr: map["MY_IPADDR"].parse().expect("invalid ipaddr"),
             target_ipaddr: args[1].parse().expect("invalid target ipaddr"),
             my_port: map["MY_PORT"].parse().expect("invalid port number"),
-            maximum_port: map["MAXIMUM_PORT_NUM"].parse().expect_err("invalid maximum port num"),
+            maximum_port: map["MAXIMUM_PORT_NUM"]
+                .parse()
+                .expect_err("invalid maximum port num"),
             scan_type: match args[2].as_str() {
                 "sS" => ScanType::Syn,
-                "sF" =>ScagnType::Fin,
-                "sX" =>ScanType::Xmas,
-                "sN" =>ScanType::Null,
-                _=> {
+                "sF" => ScanType::Fin,
+                "sX" => ScanType::Xmas,
+                "sN" => ScanType::Null,
+                _ => {
                     error!("Undefined scan method, only accept [sS|sF|sX|sN].");
                     process::exit(1);
                 }
@@ -55,5 +60,9 @@ fn main() {
         }
     };
 
-    println!("Hello, world!");
+    let (mut ts, mut tr) = transport::transport_channel(
+        1024,
+        TransportChannelType::Layer4(TransportProtocol::Ipv4(IpNextHeaderProtocols::Tcp)),
+    )
+    .expect("Failed to open channel.");
 }
