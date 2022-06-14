@@ -5,10 +5,11 @@ use pnet::{
 };
 use std::{collections::HashMap, env, fs, net::Ipv4Addr, process};
 
-enum ScagnType {
+#[derive(Copy, Clone)]
+enum ScanType {
     Syn = TcpFlags::SYN as isize,
     Fin = TcpFlags::FIN as isize,
-    Xmax = (TcpFlags::FIN | TcpFlags::URG | TcpFlags::PSH) as isize,
+    Xmas = (TcpFlags::FIN | TcpFlags::URG | TcpFlags::PSH) as isize,
     Null = 0,
 }
 
@@ -46,7 +47,7 @@ fn main() {
             my_port: map["MY_PORT"].parse().expect("invalid port number"),
             maximum_port: map["MAXIMUM_PORT_NUM"]
                 .parse()
-                .expect_err("invalid maximum port num"),
+                .expect("invalid maximum port num"),
             scan_type: match args[2].as_str() {
                 "sS" => ScanType::Syn,
                 "sF" => ScanType::Fin,
